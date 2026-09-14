@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "tailwind": "npx @tailwindcss/cli -i ./views/input.css -o ./public/output.css --watch",
-  "start": "nodemon app.js & npm run tailwind"
-},
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind": "npx @tailwindcss/cli -i ./views/input.css -o ./public/output.css --watch",
+    "start": "nodemon app.js & npm run tailwind"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.22.0",
     "@tailwindcss/cli": "^4.1.14",
     "bcryptjs": "^3.0.3",
     "connect": "^3.7.0",
@@ -24,6 +25,7 @@
     "mongoose": "^8.24.4",
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
+    "openai": "^7.15.0",
     "session": "^0.1.0"
   },
   "devDependencies": {

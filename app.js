@@ -5,21 +5,21 @@ const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config();
 
-
 console.log("Server starting...");
-
 
 const express = require("express");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const { default: mongoose } = require("mongoose");
 const multer = require("multer");
+
 const DB_PATH = process.env.MONGO_URI;
 
-//Local Module
+// Local Module
 const storeRouter = require("./routes/storeRouter");
 const hostRouter = require("./routes/hostRouter");
 const authRouter = require("./routes/authRouter");
+const aiRouter = require("./routes/aiRouter");
 const rootDir = require("./utils/pathUtil");
 const errorsController = require("./controllers/errors");
 
@@ -36,9 +36,13 @@ const store = new MongoDBStore({
 const randomString = (length) => {
   const characters = "abcdefghijklmnopqrstuvwxyz";
   let result = "";
+
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+    result += characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
   }
+
   return result;
 };
 
@@ -46,6 +50,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
+
   filename: (req, file, cb) => {
     cb(null, randomString(10) + "-" + file.originalname);
   },
@@ -68,8 +73,12 @@ const multerOptions = {
   fileFilter,
 };
 
-app.use(express.urlencoded());
+// Body Parsers
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.use(multer(multerOptions).single("photo"));
+
 app.use(express.static(path.join(rootDir, "public")));
 app.use("/uploads", express.static(path.join(rootDir, "uploads")));
 app.use("/host/uploads", express.static(path.join(rootDir, "uploads")));
@@ -91,6 +100,10 @@ app.use((req, res, next) => {
 
 app.use(authRouter);
 app.use(storeRouter);
+
+// AI API Routes
+app.use("/api/ai", aiRouter);
+
 app.use("/host", (req, res, next) => {
   if (req.isLoggedIn) {
     next();
@@ -98,6 +111,7 @@ app.use("/host", (req, res, next) => {
     res.redirect("/login");
   }
 });
+
 app.use("/host", hostRouter);
 
 app.use(errorsController.pageNotFound);
@@ -108,6 +122,7 @@ mongoose
   .connect(DB_PATH)
   .then(() => {
     console.log("Connected to Mongo");
+
     app.listen(PORT, () => {
       console.log(`Server running on address http://localhost:${PORT}`);
     });

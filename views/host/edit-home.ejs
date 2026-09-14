@@ -2,45 +2,149 @@
   </head>
   <body>
     <%- include('../partials/nav') %>
+
     <main class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
-      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800"><%= editing ? "Edit" : "Register"%> Your Home on AirBnB</h1>
-      <form action="/host/<%= editing ? "edit-home" : "add-home"%>" method="POST" enctype="multipart/form-data" class="max-w-md mx-auto">
-        <input type="hidden" name="id" value="<%= editing ? home._id : ''%>" />
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+        <%= editing ? "Edit" : "Register"%> Your Home on AirBnB
+      </h1>
+
+      <form
+        action="/host/<%= editing ? "edit-home" : "add-home"%>"
+        method="POST"
+        enctype="multipart/form-data"
+        class="max-w-md mx-auto"
+      >
+
+        <input
+          type="hidden"
+          name="id"
+          value="<%= editing ? home._id : ''%>"
+        />
+
+        <!-- House Name -->
         <input
           type="text"
+          id="houseName"
           name="houseName"
           value="<%= editing ? home.houseName : ''%>"
           placeholder="Enter your House Name"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+
+        <!-- Price -->
         <input
           type="text"
+          id="price"
           name="price"
           value="<%= editing ? home.price : ''%>"
           placeholder="Price Per Night"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+
+        <!-- Location -->
         <input
           type="text"
+          id="location"
           name="location"
           value="<%= editing ? home.location : ''%>"
           placeholder="Location"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+
+        <!-- Rating -->
         <input
           type="text"
+          id="rating"
           name="rating"
           value="<%= editing ? home.rating : ''%>"
           placeholder="Rating"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+
+        <!-- Photo -->
         <input
           type="file"
           name="photo"
           accept="image/jpg, image/jpeg, image/png"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        />
+
+        <!-- Description -->
         <textarea
+          id="description"
           name="description"
           placeholder="Describe your home"
-          class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"><%= editing ? home.description : ''%></textarea>
-        <input type="submit" value="<%= editing ? "Update Home" : "Add Home"%>" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-300" />
+          class="w-full px-4 py-2 mb-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        ><%= editing ? home.description : ''%></textarea>
+
+        <!-- AI Description Button -->
+        <button
+          type="button"
+          id="generateDescriptionBtn"
+          class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition duration-300 mb-4"
+        >
+          ✨ Generate AI Description
+        </button>
+
+        <!-- Submit -->
+        <input
+          type="submit"
+          value="<%= editing ? "Update Home" : "Add Home"%>"
+          class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-300"
+        />
+
       </form>
     </main>
+
+    <script>
+      const generateBtn = document.getElementById("generateDescriptionBtn");
+
+      generateBtn.addEventListener("click", async () => {
+        const houseName = document.getElementById("houseName").value.trim();
+        const price = document.getElementById("price").value.trim();
+        const location = document.getElementById("location").value.trim();
+        const rating = document.getElementById("rating").value.trim();
+        const description = document.getElementById("description");
+
+        if (!houseName || !price || !location || !rating) {
+          alert("Please fill House Name, Price, Location and Rating first.");
+          return;
+        }
+
+        generateBtn.disabled = true;
+        generateBtn.textContent = "✨ Generating...";
+
+        try {
+          const response = await fetch("/api/ai/description", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              houseName,
+              price: Number(price),
+              location,
+              rating: Number(rating)
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            description.value = data.description;
+          } else {
+            alert(data.message || "Failed to generate description.");
+          }
+
+        } catch (error) {
+          console.error("AI Error:", error);
+          alert("Something went wrong while generating the description.");
+        }
+
+        generateBtn.disabled = false;
+        generateBtn.textContent = "✨ Generate AI Description";
+      });
+    </script>
+
   </body>
 </html>
