@@ -1,108 +1,228 @@
 <%- include('../partials/head') %>
-</head>
+  </head>
+  <body class="app-body">
+    <%- include('../partials/nav') %>
 
-<body>
-  <%- include('../partials/nav') %>
+    <main>
+      <section class="hero-section">
+        <div class="hero-copy">
+          <span class="eyebrow"><i class="fa-solid fa-sparkles"></i> AI-powered stays</span>
+          <h1>Find a place you'll <em>love</em> to stay.</h1>
+          <p>Discover beautiful homes, compare stays and let AI match you with the right place in seconds.</p>
+          <div class="hero-actions">
+            <a href="/homes" class="btn btn-primary btn-lg"><i class="fa-solid fa-compass"></i> Explore homes</a>
+            <a href="#ai-finder" class="btn btn-white btn-lg">Try AI Finder <i class="fa-solid fa-arrow-down"></i></a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orb orb-one"></div>
+          <div class="hero-orb orb-two"></div>
+          <div class="hero-card">
+            <div class="hero-card-icon"><i class="fa-solid fa-house"></i></div>
+            <div><strong>Handpicked stays</strong><span>Made for your next escape</span></div>
+            <i class="fa-solid fa-arrow-right hero-arrow"></i>
+          </div>
+        </div>
+      </section>
 
-  <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
-
-    <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
-      Welcome to airbnb index page:
-    </h2>
-
-    <div class="flex flex-wrap justify-center gap-6">
-
-      <% registeredHomes.forEach(home => { %>
-
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 w-full max-w-sm">
-
-          <!-- Home Image -->
-          <img
-            src="<%= home.photo && home.photo.trim() ? '/' + home.photo : '/images/house5.png' %>"
-            alt="<%= home.houseName ? home.houseName : 'Home image unavailable' %>"
-            class="w-full h-48 object-cover"
-          >
-
-          <div class="p-4">
-
-            <!-- Home Name -->
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">
-              <%= home.houseName %>
-            </h3>
-
-            <!-- Location -->
-            <p class="text-gray-600 mb-2">
-              <i class="fas fa-map-marker-alt mr-2"></i>
-              <%= home.location %>
-            </p>
-
-            <!-- Price + Rating -->
-            <div class="flex justify-between items-center mb-4">
-
-              <span class="text-lg font-bold text-red-500">
-                ₹<%= home.price %> / night
-              </span>
-
-              <div class="flex items-center">
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  class="w-5 h-5 text-yellow-400 mr-1"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l2.082-5.006z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-
-                <span class="text-gray-700">
-                  <%= home.rating %>
-                </span>
-
-              </div>
-            </div>
-
-
-            <!-- BOOKING BUTTON -->
-
-            <% if (bookedHomeIds && bookedHomeIds.includes(home._id.toString())) { %>
-
-              <!-- Already Booked -->
-              <button
-                type="button"
-                class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed"
-                disabled
-              >
-                ✓ Booked
-              </button>
-
-            <% } else { %>
-
-              <!-- Book -->
-              <form action="/book/<%= home._id %>" method="POST">
-
-                <button
-                  type="submit"
-                  class="bg-green-300 hover:bg-green-500 px-4 py-2 rounded transition duration-300"
-                >
-                  Book
-                </button>
-
-              </form>
-
-            <% } %>
-
+      <section id="ai-finder" class="ai-panel">
+        <div class="ai-heading">
+          <div class="ai-badge"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div>
+            <span class="eyebrow">Smart search</span>
+            <h2>Ask AI to find your perfect home</h2>
+            <p>Describe your budget, location or vibe in natural language.</p>
           </div>
         </div>
 
-      <% }) %>
+        <form id="aiSearchForm" class="ai-search-form">
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="aiQuery" placeholder="e.g. Manali me ₹5000 ke andar 4+ rating wala home" required>
+          </div>
+          <button type="submit" id="aiSearchButton" class="btn btn-primary btn-lg"><i class="fa-solid fa-wand-magic-sparkles"></i> Find my home</button>
+        </form>
 
-    </div>
+        <div id="aiLoading" class="ai-loading hidden">
+          <span class="loader"></span> AI is finding the best matches for you...
+        </div>
+        <div id="aiRecommendation" class="ai-recommendation hidden"></div>
+        <div id="aiResults" class="home-grid ai-results hidden"></div>
+      </section>
 
-  </main>
+      <section class="section-heading">
+        <div>
+          <span class="eyebrow">Explore stays</span>
+          <h2>Homes people are loving</h2>
+        </div>
+        <a href="/homes" class="text-link">View all <i class="fa-solid fa-arrow-right"></i></a>
+      </section>
 
-</body>
+      <section class="home-grid">
+        <% registeredHomes.forEach(home => { %>
+          <article class="home-card">
+            <div class="card-image-wrap">
+              <img src="<%= home.photo && home.photo.trim() ? '/' + home.photo : '/images/house5.png' %>" alt="<%= home.houseName || 'Home' %>">
+              <span class="image-badge"><i class="fa-solid fa-star"></i> <%= home.rating %></span>
+            </div>
+            <div class="home-card-body">
+              <div class="card-title-row">
+                <h3><%= home.houseName %></h3>
+                <span class="price">₹<%= home.price %><small> / night</small></span>
+              </div>
+              <p class="location"><i class="fa-solid fa-location-dot"></i> <%= home.location %></p>
+              <div class="card-footer">
+                <a href="/homes/<%= home._id %>" class="btn btn-dark">View home</a>
+                <% if (isLoggedIn && user && user.userType === 'guest') { %>
+                  <% if (bookedHomeIds && bookedHomeIds.includes(home._id.toString())) { %>
+                    <span class="status-pill booked"><i class="fa-solid fa-check"></i> Booked</span>
+                  <% } else { %>
+                    <form action="/book/<%= home._id %>" method="POST" class="inline-form">
+                      <button type="submit" class="btn btn-outline-success"><i class="fa-regular fa-calendar-check"></i> Book</button>
+                    </form>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </section>
+    </main>
+
+    <script>
+  const aiSearchForm = document.getElementById("aiSearchForm");
+  const aiQuery = document.getElementById("aiQuery");
+  const aiSearchButton = document.getElementById("aiSearchButton");
+  const aiLoading = document.getElementById("aiLoading");
+  const aiRecommendation = document.getElementById("aiRecommendation");
+  const aiResults = document.getElementById("aiResults");
+
+  aiSearchForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const query = aiQuery.value.trim();
+
+    if (!query) {
+      return;
+    }
+
+    aiSearchButton.disabled = true;
+    aiSearchButton.textContent = "Finding...";
+    aiLoading.classList.remove("hidden");
+    aiRecommendation.classList.add("hidden");
+    aiResults.classList.add("hidden");
+
+    try {
+      const response = await fetch("/api/ai/recommend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          query: query
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      aiLoading.classList.add("hidden");
+
+      // AI recommendation
+      aiRecommendation.innerHTML = `
+        <h4 class="text-xl font-bold text-gray-800 mb-3">
+          🤖 AI Recommendation
+        </h4>
+
+        <p class="text-gray-700 whitespace-pre-line">
+          ${data.recommendation}
+        </p>
+      `;
+
+      aiRecommendation.classList.remove("hidden");
+
+      // Home results
+      if (data.homes && data.homes.length > 0) {
+
+        aiResults.innerHTML = data.homes.map(home => `
+          <div class="home-card">
+
+            <img
+              src="${home.photo ? '/' + home.photo : '/images/house5.png'}"
+              alt="${home.houseName}"
+              class="ai-home-image"
+            >
+
+            <div class="p-4">
+
+              <h4 class="text-lg font-bold text-gray-800 mb-2">
+                ${home.houseName}
+              </h4>
+
+              <p class="text-gray-600 mb-2">
+                📍 ${home.location}
+              </p>
+
+              <div class="flex justify-between items-center mb-4">
+
+                <span class="font-bold text-red-500">
+                  ₹${home.price} / night
+                </span>
+
+                <span class="text-gray-700">
+                  ⭐ ${home.rating}
+                </span>
+
+              </div>
+
+              <a
+                href="/homes/${home._id}"
+                class="inline-block bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300"
+              >
+                View Home
+              </a>
+
+            </div>
+          </div>
+        `).join("");
+
+        aiResults.classList.remove("hidden");
+
+      } else {
+
+        aiResults.innerHTML = `
+          <p class="text-gray-500 col-span-full text-center">
+            No matching homes found.
+          </p>
+        `;
+
+        aiResults.classList.remove("hidden");
+      }
+
+    } catch (error) {
+
+      console.error("AI Search Error:", error);
+
+      aiLoading.classList.add("hidden");
+
+      aiRecommendation.innerHTML = `
+        <p class="text-red-500">
+          ${error.message || "Unable to get AI recommendations."}
+        </p>
+      `;
+
+      aiRecommendation.classList.remove("hidden");
+
+    } finally {
+
+      aiSearchButton.disabled = false;
+      aiSearchButton.textContent = "Find My Home";
+
+    }
+  });
+</script>
+  </body>
 </html>

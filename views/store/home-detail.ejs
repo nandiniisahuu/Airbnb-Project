@@ -1,45 +1,36 @@
 <%- include('../partials/head') %>
   </head>
-  <body>
-      <%- include('../partials/nav') %>
-      <main class="container mx-auto bg-white shadow-lg rounded-lg p-8 mt-10 max-w-6xl">
-          <h2 class="text-3xl text-red-500 font-bold text-center mb-6">
-              Details of <%= home.houseName %>
-          </h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div class="rounded-lg overflow-hidden">
-                  <img src="<%= home.photo %>" alt="<%= home.name %>" class="w-full h-96 object-cover">
-              </div>
-              
-              <div class="space-y-6">
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Description</h3>
-                      <p class="text-gray-600"><%= home.description %></p>
-                  </div>
-
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Location</h3>
-                      <p class="text-gray-600"><%= home.location %></p>
-                  </div>
-                  
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Price</h3>
-                      <p class="text-green-600 text-xl font-bold">$<%= home.price %> / night</p>
-                  </div>
-                  
-                  <div class="border-b pb-4">
-                      <h3 class="text-2xl font-semibold mb-2">Rating</h3>
-                      <div class="flex items-center">
-                          <span class="text-yellow-400 text-xl">★</span>
-                          <span class="ml-2 text-lg"><%= home.rating %> / 5</span>
-                      </div>
-                  </div>
-                  <div class="mt-2">
-                    <%- include('../partials/favourite') %>
-                  </div>
-              </div>
+  <body class="app-body">
+    <%- include('../partials/nav') %>
+    <main class="page-shell">
+      <div class="detail-card">
+        <div class="detail-image">
+          <img src="<%= home.photo %>" alt="<%= home.houseName %>">
+          <span class="image-badge"><i class="fa-solid fa-star"></i> <%= home.rating %></span>
+        </div>
+        <div class="detail-content">
+          <span class="eyebrow">Private stay</span>
+          <h1><%= home.houseName %></h1>
+          <p class="location detail-location"><i class="fa-solid fa-location-dot"></i> <%= home.location %></p>
+          <div class="detail-price">₹<%= home.price %> <span>/ night</span></div>
+          <div class="detail-divider"></div>
+          <h3>About this place</h3>
+          <p class="detail-description"><%= home.description %></p>
+          <div class="detail-features">
+            <div><i class="fa-solid fa-star"></i><span><strong><%= home.rating %></strong> rating</span></div>
+            <div><i class="fa-solid fa-shield-heart"></i><span>Comfortable stay</span></div>
+            <div><i class="fa-solid fa-location-dot"></i><span>Great location</span></div>
           </div>
-      </main>
+          <div class="detail-actions">
+            <% if (isLoggedIn && user && user.userType === 'guest') { %>
+              <%- include('../partials/favourite', {home: home}) %>
+              <form action="/book/<%= home._id %>" method="POST" class="inline-form">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fa-regular fa-calendar-check"></i> Reserve home</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
   </body>
 </html>

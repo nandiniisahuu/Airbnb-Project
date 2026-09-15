@@ -1,275 +1,308 @@
-# 🏡 Airbnb Full Stack Web Application
+# 🏡 Airbnb Project
 
-A full-stack Airbnb-style web application built with **Node.js, Express.js, MongoDB, Mongoose, EJS and Tailwind CSS**.
+A full-stack StayNest property booking web application built with **Node.js, Express.js, EJS, MongoDB, Tailwind CSS, and Google Gemini AI**.
 
-The project allows users to explore property listings, create accounts, manage properties as hosts, upload property images, save favorite homes, and manage bookings.
+The application provides separate **Guest and Host experiences**, property management, favourites, booking and cancellation functionality, flexible home searching, image uploads, authentication, and AI-powered property description generation.
 
 ---
 
 ## 🚀 Features
 
-### 👤 User Authentication
-- User registration and login
-- Session-based authentication
-- Guest and host user types
-- Password hashing using bcrypt
-- Protected host routes
+### 👤 Guest Features
 
-### 🏠 Property Management
-- View available homes
-- Host can add a new property
-- Host can edit property details
-- Host can delete properties
-- Property details include:
-  - House name
-  - Price
-  - Location
-  - Rating
-  - Description
-  - Property image
+- User signup and login
+- Browse available homes
+- View detailed property information
+- Add/remove properties from favourites
+- Book a home
+- View **My Bookings**
+- Cancel bookings
+- Flexible home search and filtering
+- Natural-language home search
+- AI Home Finder
+- Responsive and improved user interface
+- Guest-specific navigation and actions
 
-### ❤️ Favorites
-- Users can add homes to favorites
-- Users can view their favorite homes
-- Users can remove homes from favorites
+### 🏠 Host Features
 
-### 📅 Booking System
-- Logged-in users can book a home
-- Users can view their bookings
-- Users can cancel bookings
-- Booking information is stored in MongoDB
-- A home can have one active booking at a time
-
-### 📷 Image Upload
-- Property images can be uploaded using Multer
-- Uploaded images are stored in the `uploads/` directory
-- Express serves uploaded images through static routes
-
-### 🗄️ Database
-- MongoDB Atlas database
-- Mongoose for database modeling and queries
-- Separate models for users, homes and bookings
+- Host login
+- Add properties
+- Edit properties
+- Delete properties
+- Upload property images
+- Generate AI-powered property descriptions
+- View bookings for host properties
+- Cancel bookings
+- Host users are redirected to the **Host Home List**
+- Host interface is separated from the guest experience
+- Hosts do not see guest-only **AI Home Finder** and **Book Home** actions
 
 ---
 
-## 🛠️ Technologies Used
+# 🤖 AI Features
 
-### Frontend
+The project integrates **Google Gemini API** to provide AI-powered functionality.
+
+## 1. AI Property Description Generator
+
+Hosts can generate professional property descriptions using property information.
+
+The application sends property details to the Gemini API and receives an AI-generated description.
+
+---
+
+## 2. AI Home Finder
+
+Guests can search for properties using natural-language queries.
+
+### Example
+
+```text
+Singapore me 11000 ke andar 4+ rating wala home
+```
+
+The application extracts:
+
+```text
+Location     → Singapore
+Maximum Price → 11000
+Minimum Rating → 4
+```
+
+The application identifies the search requirements and filters available properties.
+
+The current implementation uses **rule-based JavaScript parsing + MongoDB queries** for structured searches.
+
+This approach allows common searches to work without sending every request to Gemini.
+
+---
+
+# 🔌 APIs Used
+
+The project uses the following APIs/services:
+
+## Google Gemini API
+
+Used for:
+
+- AI-generated property descriptions
+- AI-powered application functionality
+
+Technology used:
+
+```text
+Google Gemini API
+@google/genai
+```
+
+The Gemini API key is stored securely in the `.env` file.
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+---
+
+## Internal REST API
+
+The application also contains its own backend API routes.
+
+### AI API Base Path
+
+```text
+/api/ai
+```
+
+This route connects the frontend/application logic with the Gemini AI service.
+
+### API Architecture
+
+```text
+Frontend
+   ↓
+Express.js API Route
+   ↓
+Controller
+   ↓
+AI Service
+   ↓
+Google Gemini API
+```
+
+---
+
+## MongoDB Atlas
+
+MongoDB Atlas is used as the application's cloud database.
+
+It stores:
+
+- Users
+- Properties
+- Bookings
+- Favourites
+- Sessions
+
+MongoDB Atlas is **not an AI API**. It is the application's database service.
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
 - HTML5
 - CSS3
-- JavaScript
 - EJS
 - Tailwind CSS
+- JavaScript
+- Font Awesome
 
-### Backend
+## Backend
+
 - Node.js
 - Express.js
-- Express Session
-- MVC architecture
 
-### Database
+## Database
+
 - MongoDB
 - MongoDB Atlas
 - Mongoose
 
-### Other Tools & Libraries
+## Authentication & Sessions
+
+- Express Session
+- connect-mongodb-session
 - bcryptjs
+
+## AI
+
+- Google Gemini API
+- `@google/genai`
+
+## File Upload
+
 - Multer
-- dotenv
-- express-validator
+
+## Development Tools
+
+- Nodemon
 - Git
 - GitHub
-- Nodemon
+- VS Code
 
 ---
 
+# 🔐 Authentication
 
+The application uses **session-based authentication**.
 
-## 🏗️ Architecture
-
-The application follows the **MVC (Model-View-Controller)** architecture.
+Sessions are managed using:
 
 ```text
-User
- │
- ▼
-Routes
- │
- ▼
-Controllers
- │
- ├──────► Models ──────► MongoDB Atlas
- │
- ▼
-Views (EJS)
- │
- ▼
-Browser
+express-session
+connect-mongodb-session
 ```
 
-### Model
-Handles database structure and MongoDB operations.
-
-### View
-EJS templates are used to generate the user interface.
-
-### Controller
-Contains application logic for authentication, properties, bookings and other operations.
-
-### Routes
-Defines the URLs and connects requests to controllers.
-
----
-
-## 🔄 Application Workflow
-
-### Guest/User
+Passwords are securely hashed using:
 
 ```text
-Register
-   ↓
-Login
-   ↓
-Browse Homes
-   ↓
-View Home Details
-   ↓
-Book Home
-   ↓
-My Bookings
-   ↓
-Cancel Booking
+bcryptjs
 ```
 
-### Host
+The application also separates permissions between:
 
 ```text
-Login
-   ↓
-Host Dashboard
-   ↓
-Add Home
-   ↓
-Upload Image
-   ↓
-Manage Homes
-   ↓
-Edit / Delete Home
+Guest
+Host
 ```
+
+Protected routes prevent unauthorized users from accessing host-specific functionality.
 
 ---
 
-## 🗃️ Main Database Models
-
-### User
-
-Stores user account information such as:
-
-- First name
-- Last name
-- Email
-- Password
-- User type
-- Favorite homes
-
-### Home
-
-Stores property information such as:
-
-- House name
-- Price
-- Location
-- Rating
-- Description
-- Photo
-- Host/user reference
-
-### Booking
-
-Stores booking information such as:
-
-- Home reference
-- User reference
-- Booking date
-- Booking status
-- Created/updated timestamps
-
----
-
-## 🔐 Environment Variables
-
-Create a `.env` file in the project root.
-
-```env
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority
-JWT_SECRET=your_secret_key
-```
-
-⚠️ **Never upload your real `.env` file or MongoDB credentials to GitHub.**
-
-Your `.gitignore` should include:
-
-```gitignore
-node_modules/
-.env
-*.log
-.DS_Store
-dist/
-```
-
----
-
-## 📸 Image Upload
+# 🖼️ Image Upload
 
 Property images are uploaded using **Multer**.
 
-Uploaded files are stored in:
+Supported image types:
+
+```text
+PNG
+JPG
+JPEG
+```
+
+Uploaded property images are stored in:
 
 ```text
 uploads/
 ```
 
-The application exposes the uploaded images through Express static routes.
+Hosts can upload property images while creating or editing properties.
 
-Example:
+---
+
+# 🎯 Project Objectives
+
+This project demonstrates practical full-stack development concepts including:
+
+- Full-stack web development
+- Node.js
+- Express.js
+- EJS
+- REST API development
+- MVC-style architecture
+- MongoDB integration
+- Mongoose
+- Authentication and authorization
+- Session management
+- CRUD operations
+- Image uploads
+- Booking management
+- Favourites
+- Flexible search and filtering
+- Natural-language search parsing
+- AI API integration
+- Google Gemini integration
+- Responsive UI development
+- Tailwind CSS
+- Git and GitHub
+
+---
+
+# 💡 Learning Outcomes
+
+Through this project, I gained practical experience with:
 
 ```text
-/uploads/property-image.jpg
+Node.js
+Express.js
+EJS
+MongoDB
+MongoDB Atlas
+Mongoose
+REST APIs
+Authentication
+Authorization
+Sessions
+CRUD Operations
+File Uploads
+Booking Systems
+Search & Filtering
+AI API Integration
+Google Gemini API
+Tailwind CSS
+Git
+GitHub
 ```
 
----
-
-## 🔒 Security Considerations
-
-- Passwords should never be stored as plain text.
-- Authentication routes are protected using sessions.
-- MongoDB credentials are stored in environment variables.
-- `.env` is excluded from Git.
-- User input is validated before processing.
-
+The project demonstrates how **frontend, backend, database, authentication, file handling, search functionality, and AI services** can work together in a complete full-stack web application.
 
 ---
 
-## 🎯 Learning Outcomes
-
-Through this project, I practiced:
-
-- Building a full-stack web application
-- Node.js and Express.js
-- MVC architecture
-- MongoDB and Mongoose
-- Authentication and sessions
-- CRUD operations
-- File/image uploads
-- EJS templating
-- Form validation
-- Git and GitHub
-- Backend routing
-- Database relationships
-- Booking workflows
-
----
-
-## 👩‍💻 Author
+# 👩‍💻 Author
 
 **Nandini**
+
+Interested in **Full Stack Development, Java, Web Development, REST APIs, MongoDB, and AI-powered applications**.

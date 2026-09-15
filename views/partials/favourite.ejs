@@ -1,4 +1,6 @@
-<form action="/favourites" method="POST">
-  <button type="submit" class="bg-green-300 p-2 hover:bg-green-500">Add to Favourite</button>
-  <input type="hidden" name="id" value="<%= home._id %>">
+<form action="/favourites" method="POST" class="inline-form">
+  <input type="hidden" name="id" value="<%= home._id %>" />
+  <button type="submit" class="btn btn-soft">
+    <i class="fa-regular fa-heart"></i> Save
+  </button>
 </form>

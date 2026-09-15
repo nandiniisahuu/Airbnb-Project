@@ -1,3 +1,4 @@
+
 // Core Module
 const path = require("path");
 
@@ -119,12 +120,16 @@ app.use(errorsController.pageNotFound);
 const PORT = 3003;
 
 mongoose
-  .connect(DB_PATH)
+  .connect(DB_PATH, {
+    family: 4,
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  })
   .then(() => {
     console.log("Connected to Mongo");
 
     app.listen(PORT, () => {
-      console.log(`Server running on address http://localhost:${PORT}`);
+      console.log(`Server running on address http://localhost:3003`);
     });
   })
   .catch((err) => {

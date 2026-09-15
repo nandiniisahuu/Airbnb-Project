@@ -177,7 +177,7 @@ exports.postHostCancelBooking = async (req, res, next) => {
 
     console.log("Host cancelled booking:", bookingId);
 
-    res.redirect("/host/bookings");
+    res.redirect("/host/host-home-list");
 
   } catch (error) {
     console.log("Error while cancelling host booking:", error);
