@@ -1,4 +1,4 @@
-# 🏡 Airbnb Project
+# 🏡 StayNest Project
 
 A full-stack StayNest property booking web application built with **Node.js, Express.js, EJS, MongoDB, Tailwind CSS, and Google Gemini AI**.
 
